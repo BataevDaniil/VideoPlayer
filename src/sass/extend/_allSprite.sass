@@ -1,0 +1,4 @@
+%all-sprite
+	@for $i from 1 through length($all-sprite)
+		.img-#{nth(nth($all-sprite, $i), length(nth($all-sprite, $i)))}
+			+sprite(nth($all-sprite, $i))
