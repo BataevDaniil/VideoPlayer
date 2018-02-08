@@ -1,8 +1,8 @@
 var gulp = require('gulp');
 var browserSync = require('browser-sync').create();
 
-var sass = require('gulp-sass');
 var pug = require('gulp-pug');
+var sass = require('gulp-sass');
 var ts = require('gulp-typescript');
 
 var notify = require('gulp-notify')
@@ -12,23 +12,17 @@ var autoprefixer = require('gulp-autoprefixer');
 var removeComments = require('gulp-strip-css-comments');
 
 var imagemin = require('gulp-imagemin');
-var spritesmith = require('gulp.spritesmith');
 
 var rimraf = require('rimraf');
 var rename = require('gulp-rename');
 var runSequence = require('run-sequence');
-var merge = require('merge-stream');
-var buffer = require('vinyl-buffer');
-
-var nameMainJs = 'main.js';
 
 var path = {
 	src: {
 		pug: 'src/pug/main.pug',
 		ts: 'src/ts/**/*.ts',
 		sass: 'src/sass/main.sass',
-		img: 'src/img/background/**/*.*',
-		sprite: 'src/img/sprite/**/*.*'
+		img: 'src/img/**/*.*', 
 	},
 	build: {
 		html: 'build',
@@ -40,11 +34,7 @@ var path = {
 		pug: 'src/pug/**/*.pug',
 		ts: 'src/ts/**/*.ts',
 		sass: 'src/sass/**/*.sass',
-		img: 'src/img/background/**/*.*',
-		sprite: 'src/img/sprite/**/*.*'
-	},
-	sprite: {
-		sass: 'src/sass/varible'
+		img: 'src/img/**/*.*',
 	},
 	clean: 'build'
 };
@@ -96,16 +86,18 @@ gulp.task('pug-build', function(){
 });
 
 gulp.task('ts-build', function () {
-	return gulp.src(path.src.ts)
-	.pipe(ts({
-		noImplicitAny: true,
-		outFile: nameMainJs
-	}))
-	.pipe(gulp.dest(path.build.js))
-	.pipe(browserSync.stream());
+	var tsProject = ts.createProject('tsconfig.json');
+	var tsResult = tsProject.src()
+		.pipe(tsProject());
+	return tsResult.js.pipe(gulp.dest(''))
+		.pipe(browserSync.stream());
+});
+gulp.task('copy-img', function() {
+	gulp.src(path.src.img)
+	    .pipe(gulp.dest(path.build.img));
 });
 
-gulp.task('compress-img-background', function() {
+gulp.task('compress-img', function() {
 	gulp.src(path.src.img)
 	.pipe(imagemin({
 		optimizationLevel: 3,
@@ -116,73 +108,10 @@ gulp.task('compress-img-background', function() {
 	.pipe(gulp.dest(path.build.img))
 });
 
-gulp.task('compress-sprite', function() {
-	var spriteData = gulp.src(path.src.sprite)
-		.pipe(spritesmith({
-			imgName: 'sprite.png',
-			cssName: '_sprite.sass',
-			cssFormat: 'sass',
-			algorithm: 'binary-tree',
-			cssTemplate: 'stylus.template.mustache',
-			cssVarMap: function(sprite) {
-				sprite.name = 's-' + sprite.name
-			}
-		}));
-
-	var imgStream = spriteData.img
-		.pipe(buffer())
-		.pipe(imagemin({
-			optimizationLevel: 3,
-			progressive: true,
-			svgoPlugins: [{removeViewBox: false}],
-			interlaced: true
-		}))
-		.pipe(gulp.dest(path.build.img));
-
-	var sassStream = spriteData.css
-		.pipe(gulp.dest(path.sprite.sass));
-
-	return merge(imgStream, sassStream);
-});
-
-gulp.task('copy-img-background', function() {
-    gulp.src(path.src.img)
-        .pipe(gulp.dest(path.build.img));
-});
-
-gulp.task('copy-img-sprite', function() {
-    gulp.src(path.src.sprite)
-        .pipe(gulp.dest(path.build.img));
-});
-
-gulp.task('sprite', function() {
-	var spriteData = gulp.src(path.src.sprite)
-	.pipe(spritesmith({
-		imgName: 'sprite.png',
-		cssName: '_sprite.sass',
-		cssFormat: 'sass',
-		algorithm: 'binary-tree',
-		cssTemplate: 'stylus.template.mustache',
-		cssVarMap: function(sprite) {
-			sprite.name = 's-' + sprite.name
-		}
-	}));
-
-	var imgStream = spriteData.img
-	.pipe(gulp.dest(path.build.img));
-
-	var sassStream = spriteData.css
-	.pipe(gulp.dest(path.sprite.sass));
-
-	return merge(imgStream, sassStream);
-});
-
 gulp.task('watch', function(){
 	gulp.watch(path.watch.pug, ['pug-build']);
-	gulp.watch(path.watch.sass, ['sass-build']);
-	gulp.watch(path.watch.ts, ['ts-build']);
-	gulp.watch(path.watch.img, ['compress-img-background']);
-	gulp.watch(path.watch.sprite, ['sprite']);
+	gulp.watch(path.watch.sass, ['sass-build']); 
+	gulp.watch(path.watch.ts, ['ts-build']); 
 });
 
 gulp.task('clean', function (cb) {
@@ -190,17 +119,16 @@ gulp.task('clean', function (cb) {
 });
 
 gulp.task('build', function(cb){
-	runSequence('clean', ['pug-build', 'sass-build', 'ts-build'], cb);
+	runSequence('clean', 'pug-build', ['sass-build', 'ts-build'], cb); 
+	gulp.src('bower_components/jquery/dist/jquery.js')
+		.pipe(gulp.dest(path.build.js)); 
 });
-
 gulp.task('prodaction', function (cb) {
-    runSequence('build', 'compress-img-background', 'compress-sprite', ['browser-sync', 'watch'], cb);
-});
-
-gulp.task('default-img', function (cb) {
-    runSequence('build', 'copy-img-background', 'copy-img-sprite', ['browser-sync', 'watch'], cb);
+	runSequence('build', 'compress-img', ['browser-sync', 'watch'], cb);
+	gulp.watch(path.watch.img, ['compress-img']);
 });
 
 gulp.task('default', function (cb) {
-    runSequence( 'build', 'copy-img-background', 'sprite', ['browser-sync', 'watch'], cb);
+	runSequence('build', 'copy-img', ['browser-sync', 'watch'], cb);
+	gulp.watch(path.watch.img, ['copy-img']);
 });

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+     "removeComments": true,
+     "outFile": "build/js/main.js",
+     "typeRoots" : ["./node_modules/@types/"],
+     "types" : ["jquery"],
+  },
+  "include": [
+    "src/ts/**/*.ts",
+  ]
+}
