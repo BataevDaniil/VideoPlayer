@@ -1,6 +1,6 @@
 @import reset/reset
 $height-nav-panel: 40px
-
+$background-nav-panel: #EF6C00
 
 body
 	width: 900px
@@ -26,7 +26,7 @@ body
 			height: $height-nav-panel
 			position: absolute
 			bottom: 0
-			background: #EF6C00
+			background: $background-nav-panel
 			.slider-time, .slider-volume, .slider-speed
 				display: inline-block
 				width: 100%
@@ -42,15 +42,36 @@ body
 				$size: $height-nav-panel/4
 				$ratio: 1.2
 				$transition-time: 0.3s
+				$foreground: #2c3e50
 				display: inline-block
 				width: 0
 				height: 0
 				border-top: $size solid transparent
 				border-bottom: $size solid transparent
-				border-left: ($size*$ratio) solid #2c3e50
+				border-left: ($size*$ratio) solid $foreground
 				margin-left: 10px
+				position: relative
+				transition: all $transition-time;
+				&.active
+					border-color: transparent
+					&:after
+						content: ''
+						opacity: 1
+						width: ($size)
+						height: ($size*1.6)
+						background: $foreground
+						position: absolute
+						right: ($size*0.1)
+						top: ($size*-0.8)
+						border-left: ($size*0.4) solid $foreground
+						box-shadow: inset ($size*0.6) 0 0 0 $background-nav-panel
 			.time
 				display: inline-block
 				width: 100px
 				height: 20px
 				color: black
+			.full-screen
+				display: inline-block
+				width: 50px
+				height: 20px
+				background: #2c3e50

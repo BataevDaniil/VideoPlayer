@@ -1,19 +1,20 @@
 class VideoPlayer {
-	public video;
-	public navPanel:JQuery;
-	public time:JQuery;
-	public play:JQuery;
-	public sliderTime:JQuery;
-	public sliderVolume:JQuery;
-	public sliderSpeed:JQuery;
-	public engineSliderTime:Mousedragdrop;
-	public engineSliderVolume:Mousedragdrop;
-	public engineSliderSpeed:Mousedragdrop;
-	public volume:JQuery;
-	public speed:JQuery;
-	public timeInvers:boolean;
+	private video;
+	private navPanel:JQuery;
+	private time:JQuery;
+	private play:JQuery;
+	private sliderTime:JQuery;
+	private sliderVolume:JQuery;
+	private sliderSpeed:JQuery;
+	private engineSliderTime:Mousedragdrop;
+	private engineSliderVolume:Mousedragdrop;
+	private engineSliderSpeed:Mousedragdrop;
+	private volume:JQuery;
+	private speed:JQuery;
+	private timeInvers:boolean;
+	private fullScreenBtn;
 
-	constructor(public selector: JQuery){
+	constructor(private selector: JQuery){
 		this.video = selector.children('video');
 		this.navPanel = selector.children('.nav-panel');
 		this.play = this.navPanel.children('.play');
@@ -23,15 +24,15 @@ class VideoPlayer {
 		this.sliderSpeed = this.navPanel.children('.slider-speed');
 		this.volume= this.navPanel.children('.volume');
 		this.speed = this.navPanel.children('.speed');
+		this.fullScreenBtn = this.navPanel.children('.full-screen');
 
 		this.timeInvers = false;
 		this.cancelSelect();
 		this.time.text('00:00 / 00:00');
 		this.engineSliderTime = new Mousedragdrop(this.sliderTime);
 		this.video.on('canplay', () => {
-			this.engineSliderTime.setRangeHor(0, this.video.get(0).duration);
+			this.engineSliderTime.setRangeHor(0, this.video.get(0).duration, 0);
 		});
-		console.log(this.video.get(0).duration);
 
 		this.engineSliderVolume = new Mousedragdrop(this.sliderVolume);
 		this.engineSliderVolume.setRangeHor(0, 1, positionSlider.right);
@@ -43,34 +44,40 @@ class VideoPlayer {
 
 		selector.on('click', (event) => {
 			if (event.target == this.selector.get(0) || event.target == this.video.get(0))
-				this.playPuseEvent();
+				this.playPuse();
 		});
 		this.play.on('click', (event) => {
-			if (event.target == this.navPanel.children('.play').get(0))
-				this.playPuseEvent();
+			if (event.target == this.play.get(0)) {
+				this.playPuse();
+				this.play.toggleClass('active')
 		});
 		this.time.on('click', () => {
 			this.timeInvers = !this.timeInvers;
 		});
 		selector.on('dblclick', (event) => {
 			if (event.target == this.selector.get(0) || event.target == this.video.get(0))
-				this.fullScreenEvent();
+				this.fullScreen();
 		});
-		this.video.on('timeupdate', this.timeupdateEvent);
+		this.video.on('timeupdate', () => {
+			this.engineSliderTime.setPosLeft(this.video.get(0).currentTime);
+			this.timeupdateEvent();
+		});
 
 		this.engineSliderTime.on(this.timeChange);
 		this.engineSliderVolume.on(this.volumeChange);
 		this.engineSliderSpeed.on(this.speedChange);
+
+		this.fullScreenBtn.on('click', this.fullScreen);
 	}
 
 	public timeChange = (left:number, top:number) => {
 		this.video.get(0).currentTime = left;
-		this.timeupdateEvent();
+		console.log(left);
 	};
 
 	public volumeChange = (left:number, top:number) => {
 		this.video.get(0).volume = left;
-		this.volume.text(left.toFixed(2)*100);
+		this.volume.text(Math.round(left*100));
 	};
 
 	public speedChange = (left:number, top:number) => {
@@ -90,15 +97,15 @@ class VideoPlayer {
 				+ Math.floor(timeDuration/60) + ':' + (Math.floor(timeDuration)%60));
 	};
 
-	public playPuseEvent= () => {
+	public playPuse = () => {
 		if (this.video.get(0).paused)
 			this.video.get(0).play();
 		else
 			this.video.get(0).pause();
 	};
-	public fullScreenEvent = () => {
-		if (!document.mozIsFullScreen && !document.webkitIsFullScreen)
-		{
+
+	public fullScreen = () => {
+		if (!document.mozIsFullScreen && !document.webkitIsFullScreen) {
 			if (this.selector.get(0).requestFullscreen)
 				this.selector.get(0).requestFullscreen();
 			else if (this.selector.get(0).mozRequestFullScreen)
@@ -106,8 +113,7 @@ class VideoPlayer {
 			else if (this.selector.get(0).webkitRequestFullscreen)
 				this.selector.get(0).webkitRequestFullscreen();
 		}
-		else
-		{
+		else {
 			if (document.cancelFullScreen)
 				document.cancelFullScreen();
 			else if (document.mozCancelFullScreen)
@@ -117,7 +123,7 @@ class VideoPlayer {
 		}
 	};
 
-	public cancelSelect() {
+	private cancelSelect() {
 		this.selector.on('selectstart', function() {return false;});
 		this.selector.on('mousedown', function() {return false;});
 	}

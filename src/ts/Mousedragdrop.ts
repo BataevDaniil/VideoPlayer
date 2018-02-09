@@ -10,8 +10,8 @@ class Mousedragdrop {
 	public elementIcone:JQuery;
 	private grub;
 	public mainAreaMovement:(event) => void;
-	public shiftLeft:number;
-	public shiftTop:number;
+	private shiftLeft:number;
+	private shiftTop:number;
 	public element:JQuery;
 	private callBack:(shiftLeft:number, shiftTop:number) => void;
 	public rangeVert;
@@ -28,6 +28,7 @@ class Mousedragdrop {
 		this.elementIcone.on('mousedown', this.mousedownEvent);
 		$(document).on('mouseup', this.mouseupEvent);
 		$(document).on('mousemove', this.mousemoveEvent);
+		element.on('mousedown', this.clickSlider);
 
 		this.elementIcone.on('touchstart', this.touchstartEvent);
 		this.elementIcone.on('touchend', this.touchendEvent);
@@ -39,6 +40,39 @@ class Mousedragdrop {
 		this.callBack = () => {};
 		this.setRangeHor(0,100, positionSlider.left);
 		this.setRangeVert(0,100, positionSlider.bottom);
+	}
+
+	public clickSlider = (event) => {
+		if (event.target == this.element.get(0)) {
+			this.grub = {left : this.elementIcone.width()/2, top : this.elementIcone.height()/2};
+			let shiftX = event.pageX - this.element.offset().left;
+			if (shiftX < this.elementIcone.width() / 2)
+				this.elementIcone.css('left', 0);
+			else if (shiftX > this.element.width() - this.elementIcone.width())
+				this.elementIcone.css('left', this.element.width() - this.elementIcone.width());
+			else
+				this.elementIcone.css('left', shiftX);
+
+			let shiftY = event.pageY - this.element.offset().top;
+			if (shiftY < this.elementIcone.height() / 2)
+				this.elementIcone.css('top', 0);
+			else if (shiftY > this.element.height() - this.elementIcone.height())
+				this.elementIcone.css('top', this.element.height() - this.elementIcone.height());
+			else
+				this.elementIcone.css('top', shiftY);
+			this.callBack(this.transfShiftLeft(shiftX), this.transfShiftTop(shiftY));
+			this.press = true;
+		}
+	};
+
+	public setPosLeft(left:number) {
+		this.elementIcone.css('left',
+			(this.element.width() - this.elementIcone.width())/(this.rangeHor.right - this.rangeHor.left) * left);
+	}
+
+	public setPosTop(top:number) {
+		this.elementIcone.css('top',
+			(this.element.height() - this.elementIcone.height())/(this.rangeVert.top - this.rangeVert.bottom) * top);
 	}
 
 	public transfShiftLeft = (left:number) =>{
@@ -55,8 +89,7 @@ class Mousedragdrop {
 
 	public setRangeHor(left:number, right:number, pos:(positionSlider | number), step:number = null) {
 		if (typeof pos !=='number')
-			this.elementIcone.css('left',
-				(this.element.width() - this.elementIcone.width())/(this.rangeHor.right - this.rangeHor.left) * pos);
+			this.setPosLeft(pos);
 		else switch(pos) {
 			case positionSlider.left: {
 				this.elementIcone.css('left', 0);
@@ -67,7 +100,7 @@ class Mousedragdrop {
 				break;
 			}
 			case positionSlider.center: {
-				this.elementIcone.css('left',(this.element.width() - this.elementIcone.width())/2);
+				this.elementIcone.css('left',(this.element.width() - this.elementIcone.width()));
 				break;
 			}
 		}
@@ -76,8 +109,7 @@ class Mousedragdrop {
 
 	public setRangeVert(bottom:number, top:number, pos:(positionSlider | number), step:number = null) {
 		if (typeof pos !== 'number')
-			this.elementIcone.css('top',
-				(this.element.height() - this.elementIcone.height())/(this.rangeVert.top - this.rangeVert.bottom) * pos);
+			this.setPosTop(pos);
 		switch(pos) {
 			case positionSlider.bottom: {
 				this.elementIcone.css('top', 0);
@@ -88,7 +120,7 @@ class Mousedragdrop {
 				break;
 			}
 			case positionSlider.center: {
-				this.elementIcone.css('top',(this.element.height() - this.elementIcone.height())/2);
+				this.elementIcone.css('top',(this.element.height() - this.elementIcone.height()));
 				break;
 			}
 		}
@@ -129,6 +161,7 @@ class Mousedragdrop {
 			this.mainAreaMovement(event);
 			if (tmp1 !== this.shiftLeft || tmp2 !== this.shiftTop) {
 				this.callBack(this.transfShiftLeft(this.shiftLeft), this.transfShiftTop(this.shiftTop));
+			console.log('move');
 			}
 		}
 		event.preventDefault();
