@@ -3,8 +3,21 @@ html(lang="en")
 head
 	meta(charset="UTF-8")
 	title VideoPlayer
+	link(rel="stylesheet", href="css/main.css")
 	script(src="js/jquery.js")
 	script(src="js/main.js")
-	link(rel="stylesheet", href="css/main.css")
 body
 	.video-player
+		video(src='video/batman.mp4')
+		.nav-panel
+			.slider-time
+				.icone
+			a(href="#" title="Play video").play
+			.time
+			.slider-volume
+				.icone
+			.volume
+			.slider-speed
+				.icone
+			.speed
+

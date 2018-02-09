@@ -90,6 +90,7 @@ gulp.task('ts-build', function () {
 	var tsResult = tsProject.src()
 		.pipe(tsProject());
 	return tsResult.js.pipe(gulp.dest(''))
+	// return tsResult.js.pipe(gulp.dest(path.build.js))
 		.pipe(browserSync.stream());
 });
 gulp.task('copy-img', function() {
@@ -114,14 +115,17 @@ gulp.task('watch', function(){
 	gulp.watch(path.watch.ts, ['ts-build']); 
 });
 
+gulp.task('copy-bower', function () {
+	gulp.src('bower_components/jquery/dist/jquery.js')
+		.pipe(gulp.dest(path.build.js));
+});
+
 gulp.task('clean', function (cb) {
 	rimraf(path.clean, cb);
 });
 
 gulp.task('build', function(cb){
-	runSequence('clean', 'pug-build', ['sass-build', 'ts-build'], cb); 
-	gulp.src('bower_components/jquery/dist/jquery.js')
-		.pipe(gulp.dest(path.build.js)); 
+	runSequence('clean', 'pug-build', 'sass-build', 'ts-build', 'copy-bower', cb);
 });
 gulp.task('prodaction', function (cb) {
 	runSequence('build', 'compress-img', ['browser-sync', 'watch'], cb);
@@ -131,4 +135,6 @@ gulp.task('prodaction', function (cb) {
 gulp.task('default', function (cb) {
 	runSequence('build', 'copy-img', ['browser-sync', 'watch'], cb);
 	gulp.watch(path.watch.img, ['copy-img']);
+	gulp.src('src/video/*')
+		.pipe(gulp.dest('build/video'));
 });

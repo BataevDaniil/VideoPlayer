@@ -1,9 +1,7 @@
-## Algorithm
-
-
 ## Build
 ```
 npm i
+bower i
 gulp
 ```
 ## Project directory tree

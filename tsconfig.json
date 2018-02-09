@@ -4,6 +4,7 @@
      "outFile": "build/js/main.js",
      "typeRoots" : ["./node_modules/@types/"],
      "types" : ["jquery"],
+//     "module": "ES2015",
   },
   "include": [
     "src/ts/**/*.ts",
