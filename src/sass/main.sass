@@ -1,18 +1,27 @@
 @import reset/reset
 $height-nav-panel: 40px
-$background-nav-panel: #EF6C00
+$background-nav-panel: #0d1029
+$color-icone: #c0c0c0
+$color-play-stop: white
+$color-slider: #661130
+$width-slider-volume: 200px
+$width-slider-speed: 200px
 
+.icone-extand
+	width: $height-nav-panel/3
+	height: $height-nav-panel/3
+	background: $color-icone
+	border-radius: 50%
 body
 	width: 900px
 	margin: auto
 	margin-top: 100px
-	div
-		display: inline-block
 	.video-player
 		width: 900px
 		height: 400px
-		background: #7f5a2c
 		position: relative
+		background: black
+		color: white
 		&:-webkit-full-screen
 			display: block
 			width: 100%
@@ -20,58 +29,140 @@ body
 		video
 			width: 100%
 			height: 100%
-			//background: black
+			background: black
 		.nav-panel
 			width: 100%
 			height: $height-nav-panel
 			position: absolute
 			bottom: 0
 			background: $background-nav-panel
-			.slider-time, .slider-volume, .slider-speed
-				display: inline-block
+			display: flex
+			flex-wrap: wrap
+			font-size: $height-nav-panel/3
+			.slider-time
+				align-self: flex-start
 				width: 100%
 				height: $height-nav-panel/3
-				background: #E91E63
+				background: $color-slider
 				.icone
-					width: $height-nav-panel/3
-					height: $height-nav-panel/3
-					background: brown
-			.slider-volume, .slider-speed
-				width: 200px
-			.play
-				$size: $height-nav-panel/4
-				$ratio: 1.2
-				$transition-time: 0.3s
-				$foreground: #2c3e50
-				display: inline-block
-				width: 0
-				height: 0
-				border-top: $size solid transparent
-				border-bottom: $size solid transparent
-				border-left: ($size*$ratio) solid $foreground
-				margin-left: 10px
-				position: relative
-				transition: all $transition-time;
-				&.active
-					border-color: transparent
-					&:after
-						content: ''
-						opacity: 1
-						width: ($size)
-						height: ($size*1.6)
-						background: $foreground
-						position: absolute
-						right: ($size*0.1)
-						top: ($size*-0.8)
-						border-left: ($size*0.4) solid $foreground
-						box-shadow: inset ($size*0.6) 0 0 0 $background-nav-panel
-			.time
-				display: inline-block
-				width: 100px
-				height: 20px
-				color: black
-			.full-screen
-				display: inline-block
-				width: 50px
-				height: 20px
-				background: #2c3e50
+					@extend .icone-extand
+					.icone-time
+						display: none
+						$width-icone-time: 35px
+						$height-icone-time: 1em
+						position: relative
+						width: $width-icone-time
+						height: $height-icone-time
+						padding: 2px 0
+						border-radius: 5px
+						background: $background-nav-panel
+						top: -$height-icone-time - 0.5
+						left: -(abs($height-nav-panel/3 -$width-icone-time))/2
+						text-align: center
+					&:active
+						.icone-time
+							display: inline-block
+				&:active
+					.icone-time
+						display: inline-block
+
+			.content-center
+				display: flex
+				align-items: center
+				justify-content: space-between
+				width: 100%
+				height: $height-nav-panel/3 * 2
+				.content-left
+					display: flex
+					align-items: center
+					.play
+						$size: $height-nav-panel/4
+						$ratio: 1.2
+						width: 0
+						height: 0
+						border-top: $size solid transparent
+						border-bottom: $size solid transparent
+						border-left: ($size*$ratio) solid $color-play-stop
+						margin-left: 10px
+						position: relative
+						&.active
+							border-color: transparent
+							&:after
+								content: ''
+								opacity: 1
+								width: ($size)
+								height: ($size*1.6)
+								background: $color-play-stop
+								position: absolute
+								right: ($size*0.1)
+								top: ($size*-0.8)
+								border-left: ($size*0.4) solid $color-play-stop
+								box-shadow: inset ($size*0.6) 0 0 0 $background-nav-panel
+					.time
+						margin: 0 20px
+					.hide-volume
+						display: flex
+						align-items: center
+						width: $height-nav-panel/3*2 - 5
+						height: $height-nav-panel/3*2
+						overflow: hidden
+						transition: width 0.3s linear
+						img.volume-icone
+							width: $height-nav-panel/3*2 - 5
+							height: $height-nav-panel/3*2 - 5
+						.slider-volume
+							display: block
+							height: $height-nav-panel/3
+							min-width: $width-slider-volume
+							background: $color-slider
+							margin-right: 5px
+							border-radius: 5px
+							.icone
+								@extend .icone-extand
+						&:active
+							width: $width-slider-volume + $height-nav-panel/3*2 + 1
+						&:hover
+							width: $width-slider-volume + $height-nav-panel/3*2 + 1
+					.volume
+						width: 20px
+						margin-right: 20px
+					.hide-speed
+						display: flex
+						align-items: center
+						width: $height-nav-panel/3*2 - 5
+						height: $height-nav-panel/3*2
+						overflow: hidden
+						transition: width 0.3s linear
+						img
+							width: $height-nav-panel/3*2 - 5
+							height: $height-nav-panel/3*2 - 5
+						.slider-speed
+							height: $height-nav-panel/3
+							min-width: $width-slider-speed
+							background: $color-slider
+							width: 20px
+							margin-right: 5px
+							border-radius: 5px
+							.icone
+								@extend .icone-extand
+						&:active
+							width: $width-slider-speed + $height-nav-panel/3*2 + 1
+						&:hover
+							width: $width-slider-speed + $height-nav-panel/3*2 + 1
+					.speed
+						width: 25px
+				.content-right
+					display: flex
+					align-items: center
+					.full-screen
+						box-sizing: border-box
+						width: 20px
+						height: 20px
+						border: 1px solid $color-icone
+						background: #2c3e50
+						margin: 0 10px
+						transition: border 0.2s linear
+						&:hover
+							border: 2px solid $color-icone
+
+

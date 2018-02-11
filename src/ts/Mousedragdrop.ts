@@ -1,10 +1,3 @@
-enum positionSlider{
-	left = 0,
-	right = 1,
-	center = 2,
-	bottom = 3,
-	top = 4,
-}
 class Mousedragdrop {
 	public press:boolean;
 	public elementIcone:JQuery;
@@ -38,8 +31,8 @@ class Mousedragdrop {
 		this.shiftLeft = 0;
 		this.shiftTop = 0;
 		this.callBack = () => {};
-		this.setRangeHor(0,100, positionSlider.left);
-		this.setRangeVert(0,100, positionSlider.bottom);
+		this.setRangeHor(0,100, 0);
+		this.setRangeVert(0,100, 0);
 	}
 
 	public clickSlider = (event) => {
@@ -67,64 +60,38 @@ class Mousedragdrop {
 
 	public setPosLeft(left:number) {
 		this.elementIcone.css('left',
-			(this.element.width() - this.elementIcone.width())/(this.rangeHor.right - this.rangeHor.left) * left);
+			(this.element.width() - this.elementIcone.width()) /
+			(this.rangeHor.right - this.rangeHor.left) *
+			(left - this.rangeHor.left));
 	}
 
 	public setPosTop(top:number) {
 		this.elementIcone.css('top',
-			(this.element.height() - this.elementIcone.height())/(this.rangeVert.top - this.rangeVert.bottom) * top);
+			(this.element.height() - this.elementIcone.height()) /
+			(this.rangeVert.top - this.rangeVert.bottom) *
+			(top - this.rangeVert.bottom));
 	}
 
 	public transfShiftLeft = (left:number) =>{
-		return this.rangeHor.left +
+		return parseFloat((this.rangeHor.left +
 		      (this.rangeHor.right - this.rangeHor.left)/
-		      (this.element.width() - this.elementIcone.width()) * left;
+		      (this.element.width() - this.elementIcone.width()) * left).toFixed(4));
 	};
 
-	public transfShiftTop = (Top:number) => {
-		return this.rangeVert.bottom +
+	public transfShiftTop = (top:number) => {
+		return parseFloat((this.rangeVert.bottom +
 		      (this.rangeVert.top - this.rangeVert.bottom)/
-			  (this.element.width() - this.elementIcone.width()) * Top;
+			  (this.element.width() - this.elementIcone.width()) * top).toFixed(4));
 	};
 
-	public setRangeHor(left:number, right:number, pos:(positionSlider | number), step:number = null) {
-		if (typeof pos !=='number')
-			this.setPosLeft(pos);
-		else switch(pos) {
-			case positionSlider.left: {
-				this.elementIcone.css('left', 0);
-				break;
-			}
-			case positionSlider.right: {
-				this.elementIcone.css('left', this.element.width() - this.elementIcone.width());
-				break;
-			}
-			case positionSlider.center: {
-				this.elementIcone.css('left',(this.element.width() - this.elementIcone.width()));
-				break;
-			}
-		}
+	public setRangeHor(left:number, right:number, pos:number, step:number = null) {
 		this.rangeHor = {left : left, right : right, step: step};
+		this.setPosLeft(pos);
 	}
 
-	public setRangeVert(bottom:number, top:number, pos:(positionSlider | number), step:number = null) {
-		if (typeof pos !== 'number')
-			this.setPosTop(pos);
-		switch(pos) {
-			case positionSlider.bottom: {
-				this.elementIcone.css('top', 0);
-				break;
-			}
-			case positionSlider.top: {
-				this.elementIcone.css('top', this.element.height() - this.elementIcone.height());
-				break;
-			}
-			case positionSlider.center: {
-				this.elementIcone.css('top',(this.element.height() - this.elementIcone.height()));
-				break;
-			}
-		}
+	public setRangeVert(bottom:number, top:number, pos:number, step:number = null) {
 		this.rangeVert = {bottom : bottom, top : top, step : step};
+		this.setPosTop(pos);
 	}
 
 	public on(callBack: (shiftLeft:number, shiftTop:number) => void) {
@@ -161,7 +128,6 @@ class Mousedragdrop {
 			this.mainAreaMovement(event);
 			if (tmp1 !== this.shiftLeft || tmp2 !== this.shiftTop) {
 				this.callBack(this.transfShiftLeft(this.shiftLeft), this.transfShiftTop(this.shiftTop));
-			console.log('move');
 			}
 		}
 		event.preventDefault();
@@ -231,7 +197,8 @@ class Mousedragdrop {
 		else if (shiftLeft < 0 && shiftTop > maxShiftTop)
 			this.elementIcone.css('left', 0)
 				.css('top', maxShiftTop);
-		this.shiftLeft = parseInt(this.elementIcone.css('left'));
-		this.shiftTop = parseInt(this.elementIcone.css('top'));
+		// console.log(this.elementIcone.css('left'));
+		this.shiftLeft = parseFloat(this.elementIcone.css('left'));
+		this.shiftTop = parseFloat(this.elementIcone.css('top'));
 	};
 }

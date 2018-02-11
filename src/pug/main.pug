@@ -12,13 +12,21 @@ body
 		.nav-panel
 			.slider-time
 				.icone
-			a(href='#').play
-			.time
-			.slider-volume
-				.icone
-			.volume
-			.slider-speed
-				.icone
-			.speed
-			a(href='#').full-screen
+					.icone-time
+			.content-center
+				.content-left
+					.play
+					.time 00:00 / 00:00
+					.hide-volume
+						img(src='img/volume.png').volume-icone
+						.slider-volume
+							.icone
+					.volume 100
+					.hide-speed
+						img(src='img/speed.png').speed-icone
+						.slider-speed
+							.icone
+					.speed 1.00
+				.content-right
+					.full-screen
 
