@@ -40,6 +40,7 @@ class VideoPlayer {
 		this.engineSliderTime = new Mousedragdrop(this.sliderTime);
 		this.video.on('canplay', () => {
 			this.engineSliderTime.setRangeHor(0, this.video.get(0).duration, 0);
+			this.playPuse();
 		});
 		this.delayNavPanel = 5000;
 

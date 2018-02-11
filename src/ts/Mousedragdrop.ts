@@ -26,6 +26,7 @@ class Mousedragdrop {
 		this.elementIcone.on('touchstart', this.touchstartEvent);
 		this.elementIcone.on('touchend', this.touchendEvent);
 		this.elementIcone.on('touchmove', this.touchmoveEvent);
+		element.on('touchstart', this.touchSlider);
 
 		this.element = element;
 		this.shiftLeft = 0;
@@ -35,6 +36,9 @@ class Mousedragdrop {
 		this.setRangeVert(0,100, 0);
 	}
 
+	private touchSlider = (event) => {
+		this.clickSlider(event.changedTouches[0]);
+	};
 	public clickSlider = (event) => {
 		if (event.target == this.element.get(0)) {
 			this.grub = {left : this.elementIcone.width()/2, top : this.elementIcone.height()/2};
@@ -130,9 +134,9 @@ class Mousedragdrop {
 				this.callBack(this.transfShiftLeft(this.shiftLeft), this.transfShiftTop(this.shiftTop));
 			}
 		}
-		event.preventDefault();
 	};
 	public touchmoveEvent = (event) => {
+		event.preventDefault();
 		if (this.press) {
 			let tmp1:number = this.shiftLeft;
 			let tmp2:number = this.shiftTop;

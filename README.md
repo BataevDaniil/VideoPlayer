@@ -1,3 +1,9 @@
+## Get started
+For work whith this Video Player just copy past all and change if need.
+```typescript
+let videoPlayer = new VideoPlayer($(main selector video player));
+```
+
 ## Build
 ```
 npm i
@@ -7,6 +13,9 @@ gulp
 ## Project directory tree
 ```
 src/
+├── img/
+│	├── speed.png
+│	└── volume.pug
 ├── pug/
 │	└── main.pug
 ├── sass/
@@ -14,7 +23,8 @@ src/
 |	|	└── _reset.sass
 │	└── main.scss
 └── ts/
-	└── main.ts
+│	├── main.ts
+	└── Mousedragdrop.ts
 ```
 
 ## Possible errors
