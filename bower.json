@@ -1,7 +1,0 @@
-{
-  "name": "testtest",
-  "private": true,
-  "dependencies": {
-    "jquery": "^3.3.1"
-  }
-}
