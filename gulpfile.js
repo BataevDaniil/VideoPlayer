@@ -41,7 +41,12 @@ var path = {
 
 gulp.task('browser-sync', function(){
 	browserSync.init({
-		server: {baseDir: 'build'}
+		server: {
+			baseDir: 'build',
+			routes: {
+				"/": "mock"
+			}
+		}
 	});
 });
 
@@ -135,6 +140,13 @@ gulp.task('prodaction', function (cb) {
 gulp.task('default', function (cb) {
 	runSequence('build', 'copy-img', ['browser-sync', 'watch'], cb);
 	gulp.watch(path.watch.img, ['copy-img']);
-	gulp.src('src/video/*')
-		.pipe(gulp.dest('build/video'));
+});
+
+gulp.task('mock', function(cb) {
+	gulp.src('mock/**/*')
+		.pipe(gulp.dest('build'));
+});
+
+gulp.task('gh-pages', function(cb) {
+	runSequence('build', 'copy-img', 'mock', cb);
 });

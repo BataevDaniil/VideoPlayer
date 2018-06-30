@@ -8,7 +8,7 @@ let videoPlayer = new VideoPlayer($(main selector video player));
 ```
 npm i
 bower i
-gulp
+yarn start
 ```
 ## Project directory tree
 ```
